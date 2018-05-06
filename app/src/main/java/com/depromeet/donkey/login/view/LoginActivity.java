@@ -1,0 +1,34 @@
+package com.depromeet.donkey.login.view;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
+import android.widget.Button;
+
+import com.depromeet.donkey.R;
+import com.depromeet.donkey.main.view.MainActivity;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
+public class LoginActivity extends AppCompatActivity{
+    @BindView(R.id.login_button)
+    Button loginBtn;
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.login_activity);
+
+        ButterKnife.bind(this);
+    }
+
+    @OnClick(R.id.login_button)
+    public void loginClick() {
+        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        startActivity(intent);
+        finish();
+    }
+}
