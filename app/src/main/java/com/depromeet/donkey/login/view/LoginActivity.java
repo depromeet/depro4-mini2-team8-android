@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.Button;
 
 import com.depromeet.donkey.R;
+import com.depromeet.donkey.join.view.JoinActivity;
 import com.depromeet.donkey.main.view.MainActivity;
 
 import butterknife.BindView;
@@ -28,6 +29,13 @@ public class LoginActivity extends AppCompatActivity{
     @OnClick(R.id.login_button)
     public void loginClick() {
         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    @OnClick(R.id.login_join_button)
+    public void joinClick() {
+        Intent intent = new Intent(LoginActivity.this, JoinActivity.class);
         startActivity(intent);
         finish();
     }
