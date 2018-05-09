@@ -4,4 +4,14 @@
     <string name="server_host">http://198.13.48.152:8080</string>
     <string name="splash_cap">임금님 귀는 당나귀 귀</string>
     <string name="title">임당귀</string>
+    <string name="short_text">짧은글</string>
+    <string name="cancle">취소</string>
+    <string name="confirm">완료</string>
+    <string name="please_title">제목을 입력하세요.</string>
+    <string name="please_detail">내용을 입력하세요.</string>
+    <string name="dday">D - 00</string>
+    <string name="preview">preview</string>
+    <string name="more">more</string>
+    <string name="detail_exam">요즘 딩고 일 잘한다. 세로라이브에 앤마리 나왔는데 라이브 잘함 제일좋아하는 노래 불러줬다 와아아앙ㅇ아아앙앙 두아리파도 세로라이브찍었다 우아아아앙ㅇ 뉴룰스 노래조타 얼굴 첨밨는데 참이쁜언니다</string>
+
 </resources>
