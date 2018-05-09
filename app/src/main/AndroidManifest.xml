@@ -23,6 +23,9 @@
         <activity android:name=".login.view.LoginActivity"/>
         <activity android:name=".join.view.JoinActivity" />
         <activity android:name=".main.view.MainActivity" />
+        <activity android:name=".contents.view.ContentsListActivity" />
+        <activity android:name=".contents.view.ContentActivity" />
+        <activity android:name=".contents.view.ContentEditActivity" />
     </application>
 
 </manifest>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    tools:layout_editor_absoluteY="81dp">
+
+    <ImageView
+        android:id="@+id/card_preview"
+        android:layout_width="166dp"
+        android:layout_height="178dp"
+        android:contentDescription="card image"
+        android:padding="2dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/tile" />
+
+    <TextView
+        android:id="@+id/tv_dday"
+        android:layout_width="wrap_content"
+        android:layout_height="33dp"
+        android:paddingLeft="17dp"
+        android:paddingRight="0dp"
+        android:paddingTop="13dp"
+        android:paddingBottom="0dp"
+        android:text="@string/dday"
+        android:textColor="#979797"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/card_preview" />
+
+    <TextView
+        android:id="@+id/tv_preview"
+        android:layout_width="162dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="27dp"
+        android:gravity="bottom"
+        android:paddingLeft="17dp"
+        android:paddingRight="17dp"
+        android:text="@string/preview"
+        android:textColor="#202121"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_dday" />
+
+    <View
+        android:id="@+id/underbar"
+        android:layout_width="128dp"
+        android:layout_height="1dp"
+        android:layout_marginStart="17dp"
+        android:layout_marginTop="11dp"
+        android:background="#979797"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_preview" />
+
+    <TextView
+        android:id="@+id/tv_more"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="4dp"
+        android:layout_marginTop="3dp"
+        android:onClick="onClick"
+        android:text="@string/more"
+        android:textColor="#de000000"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toStartOf="@+id/more_icon"
+        app:layout_constraintTop_toBottomOf="@+id/underbar" />
+
+    <ImageView
+        android:id="@+id/more_icon"
+        android:layout_width="4dp"
+        android:layout_height="6dp"
+        android:layout_marginTop="10dp"
+        android:onClick="onClick"
+        app:layout_constraintEnd_toEndOf="@+id/underbar"
+        app:layout_constraintTop_toBottomOf="@+id/underbar"
+        app:srcCompat="@drawable/right_black"
+        android:contentDescription="more icon"/>
+
+</android.support.constraint.ConstraintLayout>
