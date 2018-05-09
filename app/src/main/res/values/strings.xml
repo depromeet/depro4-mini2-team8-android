@@ -4,4 +4,6 @@
     <string name="server_host">http://198.13.48.152:8080</string>
     <string name="splash_cap">임금님 귀는 당나귀 귀</string>
     <string name="title">임당귀</string>
+    <string name="open_drawer">Open drawer</string>
+    <string name="close_drawer">Close drawer</string>
 </resources>

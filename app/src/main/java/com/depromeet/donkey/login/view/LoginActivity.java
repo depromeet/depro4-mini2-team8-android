@@ -38,6 +38,5 @@ public class LoginActivity extends AppCompatActivity{
     public void joinClick() {
         Intent intent = new Intent(LoginActivity.this, JoinActivity.class);
         startActivity(intent);
-        finish();
     }
 }

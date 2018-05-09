@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+    <!--<item
+        android:id="@+id/naviitem_interest"
+        android:icon="@drawable/bm_click"
+        android:title="관심글"
+        android:actionLayout="@layout/navi_interest" />
+    <item
+        android:id="@+id/naviitem_my_content"
+        android:icon="@drawable/my_content"
+        android:title="내가쓴글" />
+    <item
+        android:id="@+id/naviitem_logout"
+        android:icon="@drawable/logout_icon"
+        android:title="로그아웃"/>-->
+    </group>
+</menu>
