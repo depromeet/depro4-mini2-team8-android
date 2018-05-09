@@ -2,4 +2,6 @@
     <string name="app_name">donkey</string>
     <string name="tmap_key">d9807440-17b5-4694-85af-97ba04cef1a3</string>
     <string name="server_host">http://198.13.48.152:8080</string>
+    <string name="splash_cap">임금님 귀는 당나귀 귀</string>
+    <string name="title">임당귀</string>
 </resources>

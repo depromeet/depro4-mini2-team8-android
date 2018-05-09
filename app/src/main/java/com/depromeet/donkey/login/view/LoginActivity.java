@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.depromeet.donkey.R;
 import com.depromeet.donkey.join.view.JoinActivity;
@@ -16,7 +17,7 @@ import butterknife.OnClick;
 
 public class LoginActivity extends AppCompatActivity{
     @BindView(R.id.login_button)
-    Button loginBtn;
+    TextView loginBtn;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

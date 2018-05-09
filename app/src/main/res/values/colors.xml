@@ -5,4 +5,10 @@
     <color name="colorAccent">#FF4081</color>
     <color name="colorWhite">#FFFFFF</color>
     <color name="colorBlack">#000000</color>
+    <color name="colorUnderbarNone">#bdbcbc</color>
+    <color name="colorJoin">#202121</color>
+    <color name="colorCheckLogin">#ff4f4e</color>
+    <color name="colorLogin">#de1f2020</color>
+    <color name="colorJoinTitle">#2e2e2e</color>
+    <color name="colorJoinAlpha">#1e000000</color>
 </resources>
