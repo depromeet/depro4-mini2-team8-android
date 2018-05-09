@@ -27,7 +27,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textView2"
         app:srcCompat="@drawable/icon_white" />
 
-    <TextView
+    <ImageView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -35,26 +35,19 @@
         android:layout_marginStart="70dp"
         android:layout_marginTop="166dp"
         android:gravity="center_horizontal"
-        android:lineSpacingExtra="-7sp"
-        android:text="@string/splash_cap"
-        android:textColor="@color/colorWhite"
-        android:textSize="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/invalid_name" />
 
-    <TextView
+    <ImageView
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="64dp"
         android:layout_marginStart="64dp"
         android:layout_marginTop="12dp"
-        android:gravity="center_horizontal"
-        android:lineSpacingExtra="-33sp"
-        android:text="@string/title"
-        android:textColor="@color/colorWhite"
-        android:textSize="42dp"
+        app:srcCompat="@drawable/copy"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.504"
         app:layout_constraintStart_toStartOf="parent"
