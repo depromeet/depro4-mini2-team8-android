@@ -92,13 +92,13 @@ public class JoinActivity extends AppCompatActivity implements JoinContract.View
         View view = inflater.inflate(R.layout.join_actionbar, null);
         actionBar.setCustomView(view);
         actionBar.setBackgroundDrawable(getDrawable(R.color.colorWhite));
-        ImageView buttonBack = view.findViewById(R.id.join_actionbar_back_button);
+        /*ImageView buttonBack = view.findViewById(R.id.join_actionbar_back_button);
         buttonBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();
             }
-        });
+        });*/
         return true;
     }
 }
