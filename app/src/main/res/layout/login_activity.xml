@@ -58,9 +58,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:lineSpacingExtra="-1sp"
+            android:text="이메일을 확인해 주세요."
             android:textColor="@color/colorCheckLogin"
-            android:textSize="10sp"
-            tools:text="이메일을 확인해 주세요." />
+            android:textSize="10sp" />
 
 
         <EditText
@@ -89,9 +89,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:lineSpacingExtra="-1sp"
+            android:text="비밀번호를 확인해 주세요."
             android:textColor="@color/colorCheckLogin"
-            android:textSize="10sp"
-            tools:text="비밀번호를 확인해 주세요." />
+            android:textSize="10sp" />
 
     </LinearLayout>
 
