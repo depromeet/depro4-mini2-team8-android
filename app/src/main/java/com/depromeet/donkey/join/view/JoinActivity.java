@@ -4,17 +4,14 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.depromeet.donkey.R;
-import com.depromeet.donkey.join.data.Member;
+import com.depromeet.donkey.login.data.Member;
 import com.depromeet.donkey.join.presenter.JoinContract;
 import com.depromeet.donkey.join.presenter.JoinPresenter;
 

@@ -41,6 +41,8 @@
             android:textColorHint="@color/colorUnderbarNone"
             android:textColor="@color/colorLogin"
             android:textSize="16sp"
+            android:maxLines="1"
+            android:maxLength="8"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -60,7 +62,8 @@
             android:lineSpacingExtra="-1sp"
             android:text="이메일을 확인해 주세요."
             android:textColor="@color/colorCheckLogin"
-            android:textSize="10sp" />
+            android:textSize="10sp"
+            android:visibility="invisible"/>
 
 
         <EditText
@@ -73,6 +76,8 @@
             android:textColorHint="@color/colorUnderbarNone"
             android:textColor="@color/colorLogin"
             android:textSize="16sp"
+            android:maxLines="1"
+            android:maxLength="8"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             tools:layout_editor_absoluteY="379dp" />
@@ -91,7 +96,8 @@
             android:lineSpacingExtra="-1sp"
             android:text="비밀번호를 확인해 주세요."
             android:textColor="@color/colorCheckLogin"
-            android:textSize="10sp" />
+            android:textSize="10sp"
+            android:visibility="invisible"/>
 
     </LinearLayout>
 

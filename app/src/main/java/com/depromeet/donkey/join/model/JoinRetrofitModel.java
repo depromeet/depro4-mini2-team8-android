@@ -3,8 +3,8 @@ package com.depromeet.donkey.join.model;
 import android.content.Context;
 
 import com.depromeet.donkey.R;
-import com.depromeet.donkey.join.data.Member;
-import com.depromeet.donkey.join.model.Callback.ModelCallback;
+import com.depromeet.donkey.login.data.Member;
+import com.depromeet.donkey.join.model.callback.ModelCallback;
 import com.depromeet.donkey.retrofit.RetrofitService;
 
 import java.util.List;
@@ -47,7 +47,7 @@ public class JoinRetrofitModel {
 
                 if (items != null) {
                     for (Member m : items) {
-                        if (m.getId().equals(member.getId())) {
+                        if (m.getEmail().equals(member.getEmail())) {
                             callback.onFailure("아이디가 중복됩니다.");
                             return;
                         }
