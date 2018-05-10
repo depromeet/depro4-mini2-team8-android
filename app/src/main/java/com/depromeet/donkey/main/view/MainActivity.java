@@ -1,7 +1,8 @@
 package com.depromeet.donkey.main.view;
 
+import android.content.Intent;
 import android.graphics.BitmapFactory;
-import android.graphics.PointF;
+import android.location.Address;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -15,11 +16,14 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.depromeet.donkey.R;
+import com.depromeet.donkey.main.data.Marker;
+import com.depromeet.donkey.main.presenter.MainContract;
+import com.depromeet.donkey.main.presenter.MainPresenter;
 import com.skt.Tmap.TMapData;
 import com.skt.Tmap.TMapMarkerItem;
 import com.skt.Tmap.TMapPOIItem;
@@ -30,6 +34,8 @@ import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -37,7 +43,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity
-        implements TMapView.OnClickListenerCallback, LocationListener,
+        implements TMapView.OnLongClickListenerCallback, LocationListener, MainContract.View,
                     TMapView.OnCalloutRightButtonClickCallback, NavigationView.OnNavigationItemSelectedListener {
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -50,9 +56,14 @@ public class MainActivity extends AppCompatActivity
     @BindView(R.id.main_gps_stauts)
     ImageView gpsImg;
 
+    private TMapView tMapView;
     private ActionBarDrawerToggle drawerToggle;
     private LocationManager locationManager;
+
     private String address;
+    private boolean isGPSEnable = false;
+
+    private MainContract.Presenter presenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,29 +71,16 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.main_activity);
 
         ButterKnife.bind(this);
-        TMapView tMapView = new TMapView(this);
+        tMapView = new TMapView(this);
 
         tMapView.setSKTMapApiKey(getString(R.string.tmap_key));
         tmapLayout.addView(tMapView);
+
+        presenter = new MainPresenter(this);
+        presenter.attachView(this);
+
         initToolbar();
         initGps();
-
-        TMapMarkerItem mapMarkerItem = new TMapMarkerItem();
-        mapMarkerItem.setTMapPoint(new TMapPoint(37.56263480184372, 126.98695421218872));
-        mapMarkerItem.setName("Test");
-        mapMarkerItem.setCanShowCallout(true);
-        mapMarkerItem.setPosition((float) 0.5, (float) 1.0);
-        mapMarkerItem.setIcon(BitmapFactory.decodeResource(getResources(), R.drawable.poi_dot));
-        mapMarkerItem.setCalloutRightButtonImage(BitmapFactory.decodeResource(getResources(), R.drawable.poi_popup));
-        tMapView.addMarkerItem("1", mapMarkerItem);
-        tMapView.setOnCalloutRightButtonClickListener(new TMapView.OnCalloutRightButtonClickCallback() {
-            @Override
-            public void onCalloutRightButton(TMapMarkerItem tMapMarkerItem) {
-                Log.d(TAG, tMapMarkerItem.getName());
-                // add startActivity here.
-            }
-        });
-
     }
 
     private void initToolbar() {
@@ -119,41 +117,88 @@ public class MainActivity extends AppCompatActivity
 
     /***********************************TMap OnClickLinstenerCallback**********************************************/
     @Override
-    public boolean onPressEvent(ArrayList<TMapMarkerItem> arrayList, ArrayList<TMapPOIItem> arrayList1, TMapPoint tMapPoint, PointF pointF) {
-        Log.d(TAG, "lon : " + tMapPoint.getLongitude() + "/lat : " + tMapPoint.getLatitude());
-        return false;
-    }
-
-    @Override
-    public boolean onPressUpEvent(ArrayList<TMapMarkerItem> arrayList, ArrayList<TMapPOIItem> arrayList1, TMapPoint tMapPoint, PointF pointF) {
-        return false;
+    public void onLongPressEvent(ArrayList<TMapMarkerItem> arrayList, ArrayList<TMapPOIItem> arrayList1, TMapPoint tMapPoint) {
+        Log.d(TAG, "long...");
     }
 
     /***********************************TMap LocationListener**********************************************/
     @Override
     public void onLocationChanged(final Location location) {
-        Log.d(TAG, "lon : " + location.getLongitude() + "/lat : " + location.getLatitude());
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    TMapData tMapData = new TMapData();
-                    String currentAddress = tMapData.convertGpsToAddress(location.getLatitude(), location.getLongitude());
-                    if (address != null && !currentAddress.equals(address))
-                        return;
-                    /*
-                    * 주소로 데이터 요청
-                    */
-                    Log.d(TAG, currentAddress);
-                } catch (SAXException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (ParserConfigurationException e) {
-                    e.printStackTrace();
+        double lon = location.getLongitude();
+        double lat = location.getLatitude();
+        isGPSEnable = true;
+        Log.d(TAG, "lon : " + lon + "/lat : " + lat);
+        tMapView.setCenterPoint(lon, lat);
+        new GetMarkerThread(lat, lon).start();
+    }
+
+    private class GetMarkerThread extends Thread {
+        private double lat;
+        private double lon;
+
+        public GetMarkerThread(double lat, double lon) {
+            this.lat = lat;
+            this.lon = lon;
+        }
+
+        @Override
+        public void run() {
+            com.depromeet.donkey.main.data.Address addTmp = separateAddress(lat, lon);
+            String result = addTmp.getSi() + addTmp.getGu() + addTmp.getDong();
+            if (address != null && !result.equals(address))
+                return;
+            address = result;
+
+            HashMap<String, String> items = new HashMap<>();
+            items.put("si", addTmp.getSi());
+            items.put("gu", addTmp.getGu());
+            items.put("dong", addTmp.getDong());
+            presenter.requestLocationItem(items);
+        }
+    }
+
+    private class UpdateMarkerThread extends Thread {
+        private double lat;
+        private double lon;
+
+        public UpdateMarkerThread(double lat, double lon) {
+            this.lat = lat;
+            this.lon = lon;
+        }
+
+        @Override
+        public void run() {
+                com.depromeet.donkey.main.data.Address addTmp = separateAddress(lat, lon);
+                String result = addTmp.getSi() + addTmp.getGu() + addTmp.getDong();
+                if (address != null && result.equals(address)) {
+                    toast("현재 동이 아닙니다.");
+                    return;
                 }
-            }
-        }).start();
+        }
+    }
+
+    private com.depromeet.donkey.main.data.Address separateAddress(double lat, double lon) {
+        String si = null;
+        String gu = null;
+        String dong = null;
+        try {
+            TMapData tMapData = new TMapData();
+            String currentAddress = tMapData.convertGpsToAddress(lat, lon);
+            //서울 한정으로 작업했음. 타지 X
+            //시 구 동이 같으면 요청 X
+            String[] separationAddress = currentAddress.split(" ");
+            si = separationAddress[0];
+            gu = separationAddress[1];
+            dong = separationAddress[2];
+            Log.d(TAG, currentAddress + "/" + si + gu + dong);
+        } catch (SAXException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        }
+        return new com.depromeet.donkey.main.data.Address(si, gu, dong);
     }
 
     @Override
@@ -176,5 +221,47 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onCalloutRightButton(TMapMarkerItem tMapMarkerItem) {
         Log.d(TAG, "onCalloutRightButton" + tMapMarkerItem.getCalloutTitle());
+    }
+
+    /***********************************View Callback**********************************************/
+    @Override
+    public void toast(final String msg) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    @Override
+    public void paintMarkers(List<Marker> items) {
+        tMapView.removeAllMarkerItem();
+        for (final Marker item : items) {
+            TMapMarkerItem mapMarkerItem = new TMapMarkerItem();
+            mapMarkerItem.setTMapPoint(new TMapPoint(item.getLat(), item.getLng()));
+            mapMarkerItem.setName(item.getTitle());
+            mapMarkerItem.setCanShowCallout(true);
+            mapMarkerItem.setPosition((float) 0.5, (float) 1.0);
+            mapMarkerItem.setIcon(BitmapFactory.decodeResource(getResources(), R.drawable.location_icon));
+            mapMarkerItem.setCalloutRightButtonImage(BitmapFactory.decodeResource(getResources(), R.drawable.poi_popup));
+            tMapView.addMarkerItem(String.valueOf(item.getPostNo()), mapMarkerItem);
+            tMapView.setOnCalloutRightButtonClickListener(new TMapView.OnCalloutRightButtonClickCallback() {
+                @Override
+                public void onCalloutRightButton(TMapMarkerItem tMapMarkerItem) {
+                    Log.d(TAG, tMapMarkerItem.getName());
+                    // add startActivity here.
+                    /*Intent intent = new Intent(MainActivity.this, null);
+                    intent.putExtra("Marker", item);
+                    startActivity(intent);*/
+                }
+            });
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        presenter.detachView();
     }
 }

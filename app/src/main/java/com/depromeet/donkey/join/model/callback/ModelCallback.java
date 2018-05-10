@@ -1,4 +1,4 @@
-package com.depromeet.donkey.join.model.Callback;
+package com.depromeet.donkey.join.model.callback;
 
 public class ModelCallback {
     public interface JoinRetrofitCallback {

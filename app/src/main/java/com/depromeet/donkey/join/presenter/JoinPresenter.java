@@ -2,8 +2,8 @@ package com.depromeet.donkey.join.presenter;
 
 import android.content.Context;
 
-import com.depromeet.donkey.join.data.Member;
-import com.depromeet.donkey.join.model.Callback.ModelCallback;
+import com.depromeet.donkey.login.data.Member;
+import com.depromeet.donkey.join.model.callback.ModelCallback;
 import com.depromeet.donkey.join.model.JoinRetrofitModel;
 
 public class JoinPresenter implements JoinContract.Presenter, ModelCallback.JoinRetrofitCallback {

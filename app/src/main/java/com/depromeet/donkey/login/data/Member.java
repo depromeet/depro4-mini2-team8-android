@@ -1,13 +1,15 @@
-package com.depromeet.donkey.join.data;
+package com.depromeet.donkey.login.data;
 
-public class Member {
+import java.io.Serializable;
+
+public class Member implements Serializable {
     private String email;
-    private String id;
+    private String name;
     private String password;
 
     public Member(String email, String name, String password) {
         this.email = email;
-        this.id = name;
+        this.name = name;
         this.password = password;
     }
 
@@ -19,12 +21,12 @@ public class Member {
         this.email = email;
     }
 
-    public String getId() {
-        return id;
+    public String getName() {
+        return name;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setName(String id) {
+        this.name = id;
     }
 
     public String getPassword() {
