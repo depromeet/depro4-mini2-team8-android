@@ -16,11 +16,13 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.depromeet.donkey.R;
+import com.depromeet.donkey.contents.view.ContentEditActivity;
 import com.depromeet.donkey.main.data.Marker;
 import com.depromeet.donkey.main.presenter.MainContract;
 import com.depromeet.donkey.main.presenter.MainPresenter;
@@ -62,6 +64,9 @@ public class MainActivity extends AppCompatActivity
 
     private String address;
     private boolean isGPSEnable = false;
+
+    private double lat, lon;
+    HashMap<String, String> items = new HashMap<>();
 
     private MainContract.Presenter presenter;
 
@@ -149,7 +154,7 @@ public class MainActivity extends AppCompatActivity
                 return;
             address = result;
 
-            HashMap<String, String> items = new HashMap<>();
+            items = new HashMap<>();
             items.put("si", addTmp.getSi());
             items.put("gu", addTmp.getGu());
             items.put("dong", addTmp.getDong());
@@ -158,12 +163,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     private class UpdateMarkerThread extends Thread {
-        private double lat;
-        private double lon;
 
-        public UpdateMarkerThread(double lat, double lon) {
-            this.lat = lat;
-            this.lon = lon;
+        public UpdateMarkerThread(double lati, double longi) {
+            lat = lati;
+            lon = longi;
         }
 
         @Override
@@ -256,6 +259,21 @@ public class MainActivity extends AppCompatActivity
                     startActivity(intent);*/
                 }
             });
+        }
+    }
+
+    public void onClick(View v) {
+        switch (v. getId()) {
+            case R.id.floating_add_map :
+                Intent intent = new Intent(MainActivity.this, ContentEditActivity.class);
+                intent.putExtra("lat", lat);
+                intent.putExtra("lng", lon);
+                intent.putExtra("si", items.get("si").toString());
+                intent.putExtra("gu", items.get("gu").toString());
+                intent.putExtra("dong", items.get("dong").toString());
+                startActivity(intent);
+                overridePendingTransition(0,0);
+                break;
         }
     }
 

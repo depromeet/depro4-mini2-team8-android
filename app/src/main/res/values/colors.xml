@@ -6,6 +6,8 @@
     <color name="colorWhite">#FFFFFF</color>
     <color name="colorBlack">#000000</color>
     <color name="colorUnderbarNone">#bdbcbc</color>
+    <color name="colorUnderbarActiv">#065e78</color>
+    <color name="colorUnderComplete">#202121</color>
     <color name="colorJoin">#202121</color>
     <color name="colorCheckLogin">#ff4f4e</color>
     <color name="colorLogin">#de1f2020</color>

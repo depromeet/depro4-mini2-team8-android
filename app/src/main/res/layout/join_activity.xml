@@ -4,22 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/colorWhite">
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintVertical_bias="1"
-        android:src="@drawable/group"
-        android:scaleType="fitXY"/>
+    android:background="@color/colorWhite"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
 
     <TextView
         android:id="@+id/join_title"
-        android:layout_width="match_parent"
+        android:layout_width="360dp"
         android:layout_height="55dp"
         android:gravity="center"
         android:lineSpacingExtra="8sp"
@@ -31,7 +22,7 @@
 
     <View
         android:id="@+id/join_title_under"
-        android:layout_width="match_parent"
+        android:layout_width="360dp"
         android:layout_height="1dp"
         android:background="@color/colorJoinAlpha"
         app:layout_constraintStart_toStartOf="parent"
@@ -70,18 +61,20 @@
         <View
             android:id="@+id/join_id_under"
             android:layout_width="match_parent"
-            android:layout_height="2dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="1dp"
             android:background="@color/colorUnderbarNone" />
 
         <TextView
             android:id="@+id/join_id_check"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="28dp"
+            android:layout_marginBottom="20dp"
             android:layout_marginTop="4dp"
             android:text="이메일을 확인해 주세요."
             android:textColor="@color/colorCheckLogin"
-            android:textSize="10sp" />
+            android:textSize="10sp"
+            android:visibility="invisible" />
 
         <EditText
             android:id="@+id/join_pw_edit"
@@ -104,7 +97,8 @@
         <View
             android:id="@+id/join_pw_under"
             android:layout_width="match_parent"
-            android:layout_height="2dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="1dp"
             android:background="@color/colorUnderbarNone" />
 
         <TextView
@@ -114,23 +108,24 @@
             android:layout_marginTop="4dp"
             android:text="비밀번호는 8자리이상 입력해 주세요."
             android:textColor="@color/colorCheckLogin"
-            android:textSize="10sp" />
+            android:textSize="10sp"
+            android:visibility="invisible" />
 
     </LinearLayout>
 
     <TextView
         android:id="@+id/join_button"
         android:layout_width="265dp"
-        android:layout_height="wrap_content"
+        android:layout_height="38dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="38dp"
-        android:background="@drawable/gray"
+        android:layout_marginTop="25dp"
+        android:background="@drawable/rectangle_gray"
         android:gravity="center"
-        android:text="가입하기"
-        android:textSize="14sp"
         android:lineSpacingExtra="-5sp"
+        android:text="가입하기"
         android:textColor="@color/colorWhite"
+        android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/join_edit" />
