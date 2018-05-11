@@ -1,5 +1,6 @@
 package com.depromeet.donkey.retrofit;
 
+import com.depromeet.donkey.content_edit.data.Post;
 import com.depromeet.donkey.login.data.Member;
 import com.depromeet.donkey.main.data.Marker;
 
@@ -18,11 +19,8 @@ public interface RetrofitService {
             @Body Member member
     );
 
-    @GET("api/v1/accounts")
-    Call<List<Member>> getMembers();
-
     @POST("api/v1/accounts")
-    Call<Member> postMember(
+    Call<Void> postMember(
             @Body Member member
     );
 
@@ -32,7 +30,9 @@ public interface RetrofitService {
     );
 
     @POST("api/v1/posts")
-    Call<Marker> postMarker(
-            @Body Marker marker
+    Call<Void> postMarker(
+            @Body Post post
     );
+
+
 }

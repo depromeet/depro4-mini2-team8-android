@@ -102,7 +102,7 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
          return;
          }
          *********************************************************/
-        presenter.requestLoginInfo(new Member(id, "123", pw));
+        presenter.requestLoginInfo(new Member(id, id, pw));
     }
 
     @OnClick(R.id.login_join_button)

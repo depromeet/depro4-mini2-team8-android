@@ -1,6 +1,7 @@
 package com.depromeet.donkey.join.model;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.depromeet.donkey.R;
 import com.depromeet.donkey.login.data.Member;
@@ -16,6 +17,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class JoinRetrofitModel {
+    private static final String TAG = JoinRetrofitModel.class.getSimpleName();
     private final String ERROR_MESSAGE = "서버 응답이 없습니다.\n 다시 시도해 주세요.";
 
     private Retrofit retrofit;
@@ -35,41 +37,41 @@ public class JoinRetrofitModel {
     }
 
     public void putMember(final Member member) {
-        Call<List<Member>> call = retrofitService.getMembers();
-        call.enqueue(new Callback<List<Member>>() {
+        Call<Void> call = retrofitService.getLoginInfo(member);
+        call.enqueue(new Callback<Void>() {
             @Override
-            public void onResponse(Call<List<Member>> call, Response<List<Member>> response) {
-                List<Member> items = response.body();
-                if (response.code() != 200) {
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                Log.d(TAG, "code " + response.code());
+                Log.d(TAG, member.getEmail() + "/"
+                + member.getName() + "/" + member.getPassword());
+                if (response.code() == 200) {
+                    callback.onFailure("아이디가 중복됩니다.");
+                    return;
+                }
+
+                if (response.code() != 401) {
                     callback.onFailure(ERROR_MESSAGE);
                     return;
                 }
 
-                if (items != null) {
-                    for (Member m : items) {
-                        if (m.getEmail().equals(member.getEmail())) {
-                            callback.onFailure("아이디가 중복됩니다.");
-                            return;
-                        }
-                    }
-                }
-
-                Call<Member> call2 = retrofitService.postMember(member);
-                call2.enqueue(new Callback<Member>() {
+                Call<Void> call2 = retrofitService.postMember(member);
+                call2.enqueue(new Callback<Void>() {
                     @Override
-                    public void onResponse(Call<Member> call, Response<Member> response) {
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        Log.d(TAG, "code2 : " + response.code());
                         callback.onSuccess();
                     }
 
                     @Override
-                    public void onFailure(Call<Member> call, Throwable t) {
+                    public void onFailure(Call<Void> call, Throwable t) {
                         callback.onFailure(ERROR_MESSAGE);
+                        t.printStackTrace();
                     }
                 });
             }
 
             @Override
-            public void onFailure(Call<List<Member>> call, Throwable t) {
+            public void onFailure(Call<Void> call, Throwable t) {
                 callback.onFailure(ERROR_MESSAGE);
             }
         });

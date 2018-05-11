@@ -7,6 +7,7 @@ import com.depromeet.donkey.main.Model.callback.ModelCallback;
 import com.depromeet.donkey.main.data.Marker;
 import com.depromeet.donkey.retrofit.RetrofitService;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -52,7 +53,7 @@ public class MainRetrofitModel {
                 if (markers == null)
                     return;
 
-                callback.onGetMarkersSuccess(markers);
+                callback.onGetMarkersSuccess(new ArrayList(markers));
             }
 
             @Override
@@ -63,15 +64,15 @@ public class MainRetrofitModel {
     }
 
     public void postMarker(Marker marker) {
-        Call<Marker> call = retrofitService.postMarker(marker);
-        call.enqueue(new Callback<Marker>() {
+        Call<Void> call = retrofitService.postMarker(null);
+        call.enqueue(new Callback<Void>() {
             @Override
-            public void onResponse(Call<Marker> call, Response<Marker> response) {
+            public void onResponse(Call<Void> call, Response<Void> response) {
 
             }
 
             @Override
-            public void onFailure(Call<Marker> call, Throwable t) {
+            public void onFailure(Call<Void> call, Throwable t) {
                 callback.onFailure(ERROR_MESSAGE);
             }
         });
