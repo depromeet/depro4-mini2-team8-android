@@ -2,7 +2,6 @@ package com.depromeet.donkey.main.view;
 
 import android.content.Intent;
 import android.graphics.BitmapFactory;
-import android.location.Address;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -22,7 +21,9 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.depromeet.donkey.R;
-import com.depromeet.donkey.contents.view.ContentEditActivity;
+import com.depromeet.donkey.content_edit.view.ContentEditActivity;
+import com.depromeet.donkey.content_list.view.ContentsListActivity;
+import com.depromeet.donkey.login.data.Member;
 import com.depromeet.donkey.main.data.Marker;
 import com.depromeet.donkey.main.presenter.MainContract;
 import com.depromeet.donkey.main.presenter.MainPresenter;
@@ -35,9 +36,12 @@ import com.skt.Tmap.TMapView;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Iterator;
+import java.util.logging.SimpleFormatter;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -66,9 +70,10 @@ public class MainActivity extends AppCompatActivity
     private boolean isGPSEnable = false;
 
     private double lat, lon;
-    HashMap<String, String> items = new HashMap<>();
+    HashMap<String, String> addressHash = new HashMap<>();
 
     private MainContract.Presenter presenter;
+    private Member member;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +89,12 @@ public class MainActivity extends AppCompatActivity
         presenter = new MainPresenter(this);
         presenter.attachView(this);
 
+        if (!getIntent().hasExtra("Member")) {
+            toast("알 수 없는 오류입니다.");
+            return;
+        }
+
+        member = (Member) getIntent().getSerializableExtra("Member");
         initToolbar();
         initGps();
     }
@@ -110,8 +121,10 @@ public class MainActivity extends AppCompatActivity
 
         if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
             gpsImg.setImageDrawable(getDrawable(R.drawable.gps_on));
+            isGPSEnable = true;
         } else {
             gpsImg.setImageDrawable(getDrawable(R.drawable.gps_off));
+            isGPSEnable = false;
         }
     }
 
@@ -123,14 +136,53 @@ public class MainActivity extends AppCompatActivity
     /***********************************TMap OnClickLinstenerCallback**********************************************/
     @Override
     public void onLongPressEvent(ArrayList<TMapMarkerItem> arrayList, ArrayList<TMapPOIItem> arrayList1, TMapPoint tMapPoint) {
-        Log.d(TAG, "long...");
+        Log.d(TAG, "lat " + tMapPoint.getLatitude() + "/ lon " + tMapPoint.getLongitude());
+        if (!isGPSEnable) {
+            toast("gps를 켜주세요.");
+            return;
+        }
+        Marker item = new Marker(123, 99, tMapPoint.getLatitude(), tMapPoint.getKatechLon(), null,
+                null, null, 100, null, null);
+
+        Intent intent = new Intent(MainActivity.this, ContentEditActivity.class);
+        intent.putExtra("Marker", item);
+        intent.putExtra("Member", member);
+        intent.putExtra("Address", addressHash);
+        startActivityForResult(intent, 0);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == 200) {
+            final Marker item = (Marker) data.getSerializableExtra("NewMarker");
+            TMapMarkerItem mapMarkerItem = new TMapMarkerItem();
+            mapMarkerItem.setTMapPoint(new TMapPoint(item.getLat(), item.getLng()));
+            mapMarkerItem.setName(item.getTitle());
+            mapMarkerItem.setCanShowCallout(true);
+            mapMarkerItem.setPosition((float) 0.5, (float) 1.0);
+            mapMarkerItem.setIcon(BitmapFactory.decodeResource(getResources(), R.drawable.location_icon));
+            mapMarkerItem.setCalloutRightButtonImage(BitmapFactory.decodeResource(getResources(), R.drawable.speech_bubble));
+
+            tMapView.addMarkerItem(String.valueOf(item.getCreateAt()), mapMarkerItem);
+            tMapView.setOnCalloutRightButtonClickListener(new TMapView.OnCalloutRightButtonClickCallback() {
+                @Override
+                public void onCalloutRightButton(TMapMarkerItem tMapMarkerItem) {
+                    Intent intent = new Intent(MainActivity.this, ContentsListActivity.class);
+                    intent.putExtra("Markers", new ArrayList<Marker>().add(item));
+                    intent.putExtra("Member", member);
+                    intent.putExtra("Address", addressHash);
+                    startActivity(intent);
+                }
+            });
+        }
     }
 
     /***********************************TMap LocationListener**********************************************/
     @Override
     public void onLocationChanged(final Location location) {
-        double lon = location.getLongitude();
-        double lat = location.getLatitude();
+        lon = location.getLongitude();
+        lat = location.getLatitude();
         isGPSEnable = true;
         Log.d(TAG, "lon : " + lon + "/lat : " + lat);
         tMapView.setCenterPoint(lon, lat);
@@ -154,11 +206,11 @@ public class MainActivity extends AppCompatActivity
                 return;
             address = result;
 
-            items = new HashMap<>();
-            items.put("si", addTmp.getSi());
-            items.put("gu", addTmp.getGu());
-            items.put("dong", addTmp.getDong());
-            presenter.requestLocationItem(items);
+            addressHash = new HashMap<>();
+            addressHash.put("si", addTmp.getSi());
+            addressHash.put("gu", addTmp.getGu());
+            addressHash.put("dong", addTmp.getDong());
+            presenter.requestLocationItem(addressHash);
         }
     }
 
@@ -238,44 +290,80 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void paintMarkers(List<Marker> items) {
+    public void paintMarkers(ArrayList<Marker> items) {
         tMapView.removeAllMarkerItem();
-        for (final Marker item : items) {
+        ArrayList<ArrayList<Marker>> markersList = new ArrayList();
+        for (int i = 0 ; i < items.size() ; i ++) {
+            markersList.add(new ArrayList<Marker>());
+        }
+
+
+        ArrayList<Marker> itemsClone = (ArrayList) items.clone();
+        Iterator<Marker> iterator = items.iterator();
+
+        int i = 0;
+        while (iterator.hasNext()) {
+            Marker marker = iterator.next();
+            markersList.get(i).add(marker);
+            itemsClone.remove(marker);
+
+            ArrayList<Marker> clone = (ArrayList) itemsClone.clone();
+            for (Marker item : clone) {
+                if (marker.getLng() == item.getLng() &&
+                        marker.getLat() == item.getLat()) {
+                    markersList.get(i).add(item);
+                    itemsClone.remove(item);
+                }
+            }
+            i++;
+        }
+
+        for (ArrayList<Marker> markers : markersList) {
+            for (Marker marker : markers) {
+                Log.i(TAG, marker.getLat() + "/" + marker.getLng());
+                Log.i(TAG, marker.getContent() + "/" + marker.getContent());
+            }
+            Log.i(TAG, "----------------------");
+        }
+
+
+        for (final ArrayList<Marker> markers : markersList) {
             TMapMarkerItem mapMarkerItem = new TMapMarkerItem();
-            mapMarkerItem.setTMapPoint(new TMapPoint(item.getLat(), item.getLng()));
-            mapMarkerItem.setName(item.getTitle());
+            mapMarkerItem.setTMapPoint(new TMapPoint(markers.get(0).getLat(), markers.get(0).getLng()));
+            mapMarkerItem.setName(markers.get(0).getTitle());
             mapMarkerItem.setCanShowCallout(true);
             mapMarkerItem.setPosition((float) 0.5, (float) 1.0);
             mapMarkerItem.setIcon(BitmapFactory.decodeResource(getResources(), R.drawable.location_icon));
-            mapMarkerItem.setCalloutRightButtonImage(BitmapFactory.decodeResource(getResources(), R.drawable.poi_popup));
-            tMapView.addMarkerItem(String.valueOf(item.getPostNo()), mapMarkerItem);
+            mapMarkerItem.setCalloutRightButtonImage(BitmapFactory.decodeResource(getResources(), R.drawable.speech_bubble));
+
+            tMapView.addMarkerItem(String.valueOf(markers.get(0).getPostNo()), mapMarkerItem);
             tMapView.setOnCalloutRightButtonClickListener(new TMapView.OnCalloutRightButtonClickCallback() {
                 @Override
                 public void onCalloutRightButton(TMapMarkerItem tMapMarkerItem) {
-                    Log.d(TAG, tMapMarkerItem.getName());
-                    // add startActivity here.
-                    /*Intent intent = new Intent(MainActivity.this, null);
-                    intent.putExtra("Marker", item);
-                    startActivity(intent);*/
+                    Intent intent = new Intent(MainActivity.this, ContentsListActivity.class);
+                    intent.putExtra("Markers", markers);
+                    intent.putExtra("Member", member);
+                    intent.putExtra("Address", addressHash);
+                    startActivity(intent);
                 }
             });
         }
     }
 
-    public void onClick(View v) {
+    /*public void onClick(View v) {
         switch (v. getId()) {
             case R.id.floating_add_map :
                 Intent intent = new Intent(MainActivity.this, ContentEditActivity.class);
                 intent.putExtra("lat", lat);
                 intent.putExtra("lng", lon);
-                intent.putExtra("si", items.get("si").toString());
-                intent.putExtra("gu", items.get("gu").toString());
-                intent.putExtra("dong", items.get("dong").toString());
+                intent.putExtra("si", addressHash.get("si").toString());
+                intent.putExtra("gu", addressHash.get("gu").toString());
+                intent.putExtra("dong", addressHash.get("dong").toString());
                 startActivity(intent);
                 overridePendingTransition(0,0);
                 break;
         }
-    }
+    }*/
 
     @Override
     protected void onDestroy() {

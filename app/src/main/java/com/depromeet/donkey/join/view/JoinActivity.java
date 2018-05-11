@@ -22,6 +22,10 @@ import com.depromeet.donkey.login.data.Member;
 import com.depromeet.donkey.join.presenter.JoinContract;
 import com.depromeet.donkey.join.presenter.JoinPresenter;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -98,7 +102,8 @@ public class JoinActivity extends AppCompatActivity implements JoinContract.View
             toast("비밀번호를 입력해 주세요.");
             return;
         }
-        presenter.connect(new Member("0", id, pw));
+
+        presenter.connect(new Member(id, id, pw));
     }
 
     @Override
@@ -193,6 +198,7 @@ public class JoinActivity extends AppCompatActivity implements JoinContract.View
             }
         }
     };
+
     public void setJoinBtn(boolean active) {
         joinBtn.setBackground(active ? JOIN_ABLE : JOIN_DISABLE);
     }

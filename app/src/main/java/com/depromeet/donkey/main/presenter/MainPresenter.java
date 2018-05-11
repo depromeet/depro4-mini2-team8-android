@@ -6,6 +6,7 @@ import com.depromeet.donkey.main.Model.MainRetrofitModel;
 import com.depromeet.donkey.main.Model.callback.ModelCallback;
 import com.depromeet.donkey.main.data.Marker;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -43,7 +44,7 @@ public class MainPresenter implements MainContract.Presenter, ModelCallback.Retr
     }
 
     @Override
-    public void onGetMarkersSuccess(List<Marker> items) {
+    public void onGetMarkersSuccess(ArrayList<Marker> items) {
         view.paintMarkers(items);
     }
 

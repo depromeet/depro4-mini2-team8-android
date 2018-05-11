@@ -63,18 +63,6 @@
             app:layout_constraintHorizontal_bias="0.9"
             android:id="@+id/main_gps_stauts"/>
 
-        <ImageButton
-            android:id="@+id/floating_add_map"
-            android:layout_width="70dp"
-            android:layout_height="75dp"
-            android:layout_marginBottom="10dp"
-            android:layout_marginEnd="14dp"
-            android:background="@null"
-            android:onClick="onClick"
-            android:scaleType="matrix"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:srcCompat="@drawable/write" />
     </android.support.constraint.ConstraintLayout>
 
     <android.support.design.widget.NavigationView
