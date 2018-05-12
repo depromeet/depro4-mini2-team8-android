@@ -14,13 +14,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.Pair;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.annimon.stream.Collectors;
 import com.depromeet.donkey.R;
+import com.depromeet.donkey.content_edit.data.Post;
 import com.depromeet.donkey.content_edit.view.ContentEditActivity;
 import com.depromeet.donkey.content_list.view.ContentsListActivity;
 import com.depromeet.donkey.login.data.Member;
@@ -41,7 +44,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.logging.SimpleFormatter;
+import java.util.stream.Stream;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -141,8 +147,10 @@ public class MainActivity extends AppCompatActivity
             toast("gps를 켜주세요.");
             return;
         }
-        Marker item = new Marker(123, 99, tMapPoint.getLatitude(), tMapPoint.getKatechLon(), null,
-                null, null, 100, null, null);
+        Marker item = new Marker(123, 99,
+                Double.parseDouble(String.format("%.2f", tMapPoint.getLatitude())),
+                Double.parseDouble(String.format("%.2f", tMapPoint.getKatechLon())),
+                null, null, null, 100, null, null);
 
         Intent intent = new Intent(MainActivity.this, ContentEditActivity.class);
         intent.putExtra("Marker", item);
@@ -155,7 +163,7 @@ public class MainActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == 200) {
-            final Marker item = (Marker) data.getSerializableExtra("NewMarker");
+            /*final Marker item = (Marker) data.getSerializableExtra("NewMarker");
             TMapMarkerItem mapMarkerItem = new TMapMarkerItem();
             mapMarkerItem.setTMapPoint(new TMapPoint(item.getLat(), item.getLng()));
             mapMarkerItem.setName(item.getTitle());
@@ -164,7 +172,7 @@ public class MainActivity extends AppCompatActivity
             mapMarkerItem.setIcon(BitmapFactory.decodeResource(getResources(), R.drawable.location_icon));
             mapMarkerItem.setCalloutRightButtonImage(BitmapFactory.decodeResource(getResources(), R.drawable.speech_bubble));
 
-            tMapView.addMarkerItem(String.valueOf(item.getCreateAt()), mapMarkerItem);
+            tMapView.addMarkerItem(String.valueOf(item.getPostNo()), mapMarkerItem);
             tMapView.setOnCalloutRightButtonClickListener(new TMapView.OnCalloutRightButtonClickCallback() {
                 @Override
                 public void onCalloutRightButton(TMapMarkerItem tMapMarkerItem) {
@@ -174,7 +182,7 @@ public class MainActivity extends AppCompatActivity
                     intent.putExtra("Address", addressHash);
                     startActivity(intent);
                 }
-            });
+            });*/
         }
     }
 
@@ -292,6 +300,26 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void paintMarkers(ArrayList<Marker> items) {
         tMapView.removeAllMarkerItem();
+
+
+        LinkedHashSet<Pair<Float, Float>> points = new LinkedHashSet<>();
+        items.forEach(item -> points.add(
+                new Pair(item.getLat(), item.getLng())));
+
+        /*com.annimon.stream.Stream.of(points)
+                .filter(post ->
+                        post.getLat() == floatFloatPair.getKey()
+                                && post.getLng() == floatFloatPair.getValue()).collect(Collectors.toList())
+        ))
+                .collect(Collectors.toList());
+
+        points.stream().map(floatFloatPair -> new MappedPost(floatFloatPair,
+                mappedList.stream().filter(post ->
+                        post.getLat() == floatFloatPair.getKey()
+                                && post.getLng() == floatFloatPair.getValue()).collect(Collectors.toList())
+        ))
+                .collect(Collectors.toList());*/
+
         ArrayList<ArrayList<Marker>> markersList = new ArrayList();
         for (int i = 0 ; i < items.size() ; i ++) {
             markersList.add(new ArrayList<Marker>());
