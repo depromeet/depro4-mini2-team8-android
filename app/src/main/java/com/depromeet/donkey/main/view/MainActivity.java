@@ -14,13 +14,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.Pair;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.annimon.stream.Collectors;
 import com.depromeet.donkey.R;
+import com.depromeet.donkey.content_edit.data.Post;
 import com.depromeet.donkey.content_edit.view.ContentEditActivity;
 import com.depromeet.donkey.content_list.view.ContentsListActivity;
 import com.depromeet.donkey.login.data.Member;
@@ -41,7 +44,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.logging.SimpleFormatter;
+import java.util.stream.Stream;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -141,8 +147,10 @@ public class MainActivity extends AppCompatActivity
             toast("gps를 켜주세요.");
             return;
         }
-        Marker item = new Marker(123, 99, tMapPoint.getLatitude(), tMapPoint.getKatechLon(), null,
-                null, null, 100, null, null);
+        Marker item = new Marker(123, 99,
+                Double.parseDouble(String.format("%.2f", tMapPoint.getLatitude())),
+                Double.parseDouble(String.format("%.2f", tMapPoint.getKatechLon())),
+                null, null, null, 100, null, null);
 
         Intent intent = new Intent(MainActivity.this, ContentEditActivity.class);
         intent.putExtra("Marker", item);
@@ -155,7 +163,7 @@ public class MainActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == 200) {
-            final Marker item = (Marker) data.getSerializableExtra("NewMarker");
+            /*final Marker item = (Marker) data.getSerializableExtra("NewMarker");
             TMapMarkerItem mapMarkerItem = new TMapMarkerItem();
             mapMarkerItem.setTMapPoint(new TMapPoint(item.getLat(), item.getLng()));
             mapMarkerItem.setName(item.getTitle());
@@ -164,7 +172,7 @@ public class MainActivity extends AppCompatActivity
             mapMarkerItem.setIcon(BitmapFactory.decodeResource(getResources(), R.drawable.location_icon));
             mapMarkerItem.setCalloutRightButtonImage(BitmapFactory.decodeResource(getResources(), R.drawable.speech_bubble));
 
-            tMapView.addMarkerItem(String.valueOf(item.getCreateAt()), mapMarkerItem);
+            tMapView.addMarkerItem(String.valueOf(item.getPostNo()), mapMarkerItem);
             tMapView.setOnCalloutRightButtonClickListener(new TMapView.OnCalloutRightButtonClickCallback() {
                 @Override
                 public void onCalloutRightButton(TMapMarkerItem tMapMarkerItem) {
@@ -174,7 +182,7 @@ public class MainActivity extends AppCompatActivity
                     intent.putExtra("Address", addressHash);
                     startActivity(intent);
                 }
-            });
+            });*/
         }
     }
 
@@ -289,65 +297,56 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
+    static class MappedPost {
+        Pair<Float, Float> point;
+        List<Marker> posts;
+
+        public MappedPost(Pair<Float, Float> point, List<Marker> posts) {
+            this.point = point;
+            this.posts = posts;
+        }
+    }
+
     @Override
     public void paintMarkers(ArrayList<Marker> items) {
         tMapView.removeAllMarkerItem();
-        ArrayList<ArrayList<Marker>> markersList = new ArrayList();
-        for (int i = 0 ; i < items.size() ; i ++) {
-            markersList.add(new ArrayList<Marker>());
-        }
+
+        LinkedHashSet<Pair<Float, Float>> points = new LinkedHashSet<>();
+        items.forEach(item -> points.add(
+                new Pair(item.getLat(), item.getLng())));
 
 
-        ArrayList<Marker> itemsClone = (ArrayList) items.clone();
-        Iterator<Marker> iterator = items.iterator();
+        LinkedHashSet<Pair<Float, Float>> pairs = new LinkedHashSet<>();
+        items.forEach(post -> points.add(new Pair(post.getLat(), post.getLng())));
+        List<MappedPost> mappedPostsList = pairs.stream().map(floatFloatPair -> new MappedPost(floatFloatPair,
+                items.stream().filter(post ->
+                        post.getLat() == floatFloatPair.first
+                                && post.getLng() == floatFloatPair.second)
+                        .collect(java.util.stream.Collectors.toList())
+        ))
+                .collect(java.util.stream.Collectors.toList());
 
-        int i = 0;
-        while (iterator.hasNext()) {
-            Marker marker = iterator.next();
-            markersList.get(i).add(marker);
-            itemsClone.remove(marker);
-
-            ArrayList<Marker> clone = (ArrayList) itemsClone.clone();
-            for (Marker item : clone) {
-                if (marker.getLng() == item.getLng() &&
-                        marker.getLat() == item.getLat()) {
-                    markersList.get(i).add(item);
-                    itemsClone.remove(item);
-                }
-            }
-            i++;
-        }
-
-        for (ArrayList<Marker> markers : markersList) {
-            for (Marker marker : markers) {
-                Log.i(TAG, marker.getLat() + "/" + marker.getLng());
-                Log.i(TAG, marker.getContent() + "/" + marker.getContent());
-            }
-            Log.i(TAG, "----------------------");
-        }
-
-
-        for (final ArrayList<Marker> markers : markersList) {
+        mappedPostsList.forEach(mappedPost -> {
             TMapMarkerItem mapMarkerItem = new TMapMarkerItem();
-            mapMarkerItem.setTMapPoint(new TMapPoint(markers.get(0).getLat(), markers.get(0).getLng()));
-            mapMarkerItem.setName(markers.get(0).getTitle());
+            mapMarkerItem.setTMapPoint(new TMapPoint(mappedPost.point.first, mappedPost.point.second));
+//      mapMarkerItem.setName(markers.get(0).getTitle());
             mapMarkerItem.setCanShowCallout(true);
             mapMarkerItem.setPosition((float) 0.5, (float) 1.0);
             mapMarkerItem.setIcon(BitmapFactory.decodeResource(getResources(), R.drawable.location_icon));
             mapMarkerItem.setCalloutRightButtonImage(BitmapFactory.decodeResource(getResources(), R.drawable.speech_bubble));
 
-            tMapView.addMarkerItem(String.valueOf(markers.get(0).getPostNo()), mapMarkerItem);
+            tMapView.addMarkerItem(String.valueOf(mappedPost.point), mapMarkerItem);
             tMapView.setOnCalloutRightButtonClickListener(new TMapView.OnCalloutRightButtonClickCallback() {
                 @Override
                 public void onCalloutRightButton(TMapMarkerItem tMapMarkerItem) {
                     Intent intent = new Intent(MainActivity.this, ContentsListActivity.class);
-                    intent.putExtra("Markers", markers);
+                    intent.putExtra("Markers", mappedPost.posts.get(0));
                     intent.putExtra("Member", member);
                     intent.putExtra("Address", addressHash);
                     startActivity(intent);
                 }
             });
-        }
+        });
     }
 
     /*public void onClick(View v) {
