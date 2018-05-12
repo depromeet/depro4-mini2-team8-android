@@ -297,85 +297,56 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
+    static class MappedPost {
+        Pair<Float, Float> point;
+        List<Marker> posts;
+
+        public MappedPost(Pair<Float, Float> point, List<Marker> posts) {
+            this.point = point;
+            this.posts = posts;
+        }
+    }
+
     @Override
     public void paintMarkers(ArrayList<Marker> items) {
         tMapView.removeAllMarkerItem();
-
 
         LinkedHashSet<Pair<Float, Float>> points = new LinkedHashSet<>();
         items.forEach(item -> points.add(
                 new Pair(item.getLat(), item.getLng())));
 
-        /*com.annimon.stream.Stream.of(points)
-                .filter(post ->
-                        post.getLat() == floatFloatPair.getKey()
-                                && post.getLng() == floatFloatPair.getValue()).collect(Collectors.toList())
+
+        LinkedHashSet<Pair<Float, Float>> pairs = new LinkedHashSet<>();
+        items.forEach(post -> points.add(new Pair(post.getLat(), post.getLng())));
+        List<MappedPost> mappedPostsList = pairs.stream().map(floatFloatPair -> new MappedPost(floatFloatPair,
+                items.stream().filter(post ->
+                        post.getLat() == floatFloatPair.first
+                                && post.getLng() == floatFloatPair.second)
+                        .collect(java.util.stream.Collectors.toList())
         ))
-                .collect(Collectors.toList());
+                .collect(java.util.stream.Collectors.toList());
 
-        points.stream().map(floatFloatPair -> new MappedPost(floatFloatPair,
-                mappedList.stream().filter(post ->
-                        post.getLat() == floatFloatPair.getKey()
-                                && post.getLng() == floatFloatPair.getValue()).collect(Collectors.toList())
-        ))
-                .collect(Collectors.toList());*/
-
-        ArrayList<ArrayList<Marker>> markersList = new ArrayList();
-        for (int i = 0 ; i < items.size() ; i ++) {
-            markersList.add(new ArrayList<Marker>());
-        }
-
-
-        ArrayList<Marker> itemsClone = (ArrayList) items.clone();
-        Iterator<Marker> iterator = items.iterator();
-
-        int i = 0;
-        while (iterator.hasNext()) {
-            Marker marker = iterator.next();
-            markersList.get(i).add(marker);
-            itemsClone.remove(marker);
-
-            ArrayList<Marker> clone = (ArrayList) itemsClone.clone();
-            for (Marker item : clone) {
-                if (marker.getLng() == item.getLng() &&
-                        marker.getLat() == item.getLat()) {
-                    markersList.get(i).add(item);
-                    itemsClone.remove(item);
-                }
-            }
-            i++;
-        }
-
-        for (ArrayList<Marker> markers : markersList) {
-            for (Marker marker : markers) {
-                Log.i(TAG, marker.getLat() + "/" + marker.getLng());
-                Log.i(TAG, marker.getContent() + "/" + marker.getContent());
-            }
-            Log.i(TAG, "----------------------");
-        }
-
-
-        for (final ArrayList<Marker> markers : markersList) {
+        mappedPostsList.forEach(mappedPost -> {
             TMapMarkerItem mapMarkerItem = new TMapMarkerItem();
-            mapMarkerItem.setTMapPoint(new TMapPoint(markers.get(0).getLat(), markers.get(0).getLng()));
-            mapMarkerItem.setName(markers.get(0).getTitle());
+            mapMarkerItem.setTMapPoint(new TMapPoint(mappedPost.point.first, mappedPost.point.second));
+//      mapMarkerItem.setName(markers.get(0).getTitle());
             mapMarkerItem.setCanShowCallout(true);
             mapMarkerItem.setPosition((float) 0.5, (float) 1.0);
             mapMarkerItem.setIcon(BitmapFactory.decodeResource(getResources(), R.drawable.location_icon));
             mapMarkerItem.setCalloutRightButtonImage(BitmapFactory.decodeResource(getResources(), R.drawable.speech_bubble));
 
-            tMapView.addMarkerItem(String.valueOf(markers.get(0).getPostNo()), mapMarkerItem);
+            tMapView.addMarkerItem(String.valueOf(mappedPost.point), mapMarkerItem);
             tMapView.setOnCalloutRightButtonClickListener(new TMapView.OnCalloutRightButtonClickCallback() {
                 @Override
                 public void onCalloutRightButton(TMapMarkerItem tMapMarkerItem) {
                     Intent intent = new Intent(MainActivity.this, ContentsListActivity.class);
-                    intent.putExtra("Markers", markers);
+                    intent.putExtra("Markers", mappedPost.posts.get(0));
                     intent.putExtra("Member", member);
                     intent.putExtra("Address", addressHash);
                     startActivity(intent);
                 }
             });
-        }
+        });
     }
 
     /*public void onClick(View v) {
